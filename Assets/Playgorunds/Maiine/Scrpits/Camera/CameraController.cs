@@ -11,6 +11,8 @@ public class CameraController : MonoBehaviour
     public Transform basePositionCam;
     public Transform aimPositionCam;
 
+    public GameObject objective;
+
     public float minDistance;
     public float cameraSpeed;
     public float cameraAimSpeed;
@@ -39,31 +41,6 @@ public class CameraController : MonoBehaviour
         actualMovemenmt();
         aimPosition();
         transform.LookAt(lookAtCamera);
-
-        if (isAiming)
-        {
-            if (Input.GetMouseButtonDown(0))
-            {
-                RaycastHit hit;
-
-                if (Physics.Raycast(transform.position, transform.forward, out hit, Mathf.Infinity, collisionAimRay))
-                {
-                    pentadent.SetObjective(hit.transform);
-                    pentadent.SetDir();
-                }
-            }
-        }
-
-        if (Input.GetMouseButtonDown(1))
-        {
-            aimPosition = AimCam;
-            isAiming = true;
-        }
-        if (Input.GetMouseButtonUp(1))
-        {
-            aimPosition = ThirdPersonCam;
-            isAiming = false;
-        }
     }
 
     public void UpdateMovement(int dir)
@@ -76,6 +53,40 @@ public class CameraController : MonoBehaviour
                 actualMovemenmt = GoBackward;
             else if (dir == 2)
                 actualMovemenmt = delegate { };
+        }
+    }
+
+    public void Aim()
+    {
+        aimPosition = AimCam;
+        isAiming = true;
+    }
+
+    public void CancelAim()
+    {
+        aimPosition = ThirdPersonCam;
+        isAiming = false;
+    }
+
+    public void Shoot()
+    {
+        if (isAiming)
+        {
+            RaycastHit hit;
+
+            if (Physics.Raycast(transform.position, transform.forward, out hit, Mathf.Infinity, collisionAimRay))
+            {
+                objective.transform.position = hit.point;
+
+                pentadent.SetObjective(objective.transform, hit.collider.transform);
+                pentadent.SetDir();
+            }
+            else
+            {
+                objective.transform.position = transform.position + transform.forward * 100;
+                pentadent.SetObjective(objective.transform, null);
+                pentadent.SetDir();
+            }
         }
     }
 

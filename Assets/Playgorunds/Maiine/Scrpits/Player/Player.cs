@@ -9,6 +9,10 @@ public class Player : MonoBehaviour
     
     ButtonsController _buttons;
 
+    public CameraController _camera;
+    public Projectile _pentadent;
+    public Projectile _arrow;
+
     Rigidbody rb;
 
     public LayerMask layerMaskFloor;
@@ -23,7 +27,7 @@ public class Player : MonoBehaviour
 
     void Awake()
     {
-        _buttons = new ButtonsController(this);
+        _buttons = new ButtonsController(this, _camera, _pentadent, _arrow);
         buttonsDelegate = delegate { };
         StartCoroutine(CheckTimerCamera());
 

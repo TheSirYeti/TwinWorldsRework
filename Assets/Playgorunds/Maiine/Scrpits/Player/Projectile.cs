@@ -6,8 +6,10 @@ public class Projectile : MonoBehaviour
 {
     public Player _player;
     Transform _objective;
+    Transform _collider;
 
-    public float speed;
+    public float backSpeed;
+    public float goSpeed;
     public float minDistance;
 
     public bool isOnParent = true;
@@ -29,16 +31,17 @@ public class Projectile : MonoBehaviour
     {
         actualMovement();
 
-        if(Input.GetKeyDown(KeyCode.F) && isTrigger && !isConected)
+        if (Input.GetKeyDown(KeyCode.F) && isTrigger && !isConected)
         {
             actualInteractable.StartInteractable(_player);
             isConected = true;
         }
     }
 
-    public void SetObjective(Transform objective)
+    public void SetObjective(Transform objective, Transform collider)
     {
         _objective = objective;
+        _collider = collider;
     }
 
     public void SetDir()
@@ -52,7 +55,13 @@ public class Projectile : MonoBehaviour
         {
             isOnObjective = false;
             actualMovement = BackToParent;
-            actualInteractable.StopInteractable();
+
+            if (actualInteractable != null)
+            {
+                actualInteractable.StopInteractable();
+                actualInteractable = null;
+            }
+
             isTrigger = false;
             isConected = false;
         }
@@ -63,7 +72,7 @@ public class Projectile : MonoBehaviour
         if (Vector3.Distance(transform.position, _player.transform.position) > minDistance)
         {
             transform.LookAt(_player.transform);
-            transform.position += (_player.transform.position - transform.position) * speed * Time.deltaTime;
+            transform.position += (_player.transform.position - transform.position) * backSpeed * Time.deltaTime;
         }
         else if (isOnParent == false)
             isOnParent = true;
@@ -72,21 +81,30 @@ public class Projectile : MonoBehaviour
     void GoToObjective()
     {
         transform.LookAt(_objective);
-        transform.position += (_objective.position - transform.position) * speed * Time.deltaTime;
+        transform.position += transform.forward * goSpeed * Time.deltaTime;
+
+        if (Vector3.Distance(transform.position, _objective.position) < 0.2f && _collider == null)
+        {
+            actualMovement = delegate { };
+            isOnObjective = true;
+        }
     }
 
     private void OnTriggerEnter(Collider other)
     {
-        if (other.gameObject == _objective.gameObject)
+        if (!isOnParent && !isOnObjective)
         {
-            actualMovement = delegate { };
-            isOnObjective = true;
-
-            IInteractable thisInteractable = other.GetComponent<IInteractable>();
-            if(thisInteractable != null)
+            if (other.gameObject == _collider.gameObject)
             {
-                actualInteractable = thisInteractable;
-                isTrigger = true;
+                actualMovement = delegate { };
+                isOnObjective = true;
+
+                IInteractable thisInteractable = other.GetComponent<IInteractable>();
+                if (thisInteractable != null)
+                {
+                    actualInteractable = thisInteractable;
+                    isTrigger = true;
+                }
             }
         }
     }

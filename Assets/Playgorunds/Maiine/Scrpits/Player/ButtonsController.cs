@@ -5,14 +5,20 @@ using UnityEngine;
 public class ButtonsController
 {
     Player _player;
+    CameraController _cameraController;
+    Projectile _pentadent;
+    Projectile _arrow;
     Vector3 _movementVector;
     Vector3 _cameraVector;
     float mouseX;
     float mouseY;
 
-    public ButtonsController(Player player)
+    public ButtonsController(Player player, CameraController cameraController, Projectile pentadent, Projectile arrow)
     {
         _player = player;
+        _cameraController = cameraController;
+        _pentadent = pentadent;
+        _arrow = arrow;
     }
 
     public void OnUpdate()
@@ -20,6 +26,8 @@ public class ButtonsController
         MovementInputs();
         CameraInputs();
         JumpInput();
+        AimInput();
+        ShootInput();
     }
 
     void MovementInputs()
@@ -60,12 +68,20 @@ public class ButtonsController
 
     void AimInput()
     {
-
+        if (Input.GetButtonDown("Fire2"))
+        {
+            _cameraController.Aim();
+        }
+        if (Input.GetButtonUp("Fire2"))
+        {
+            _cameraController.CancelAim();
+        }
     }
 
     void ShootInput()
     {
-
+        if (Input.GetButtonDown("Fire1"))
+            _cameraController.Shoot();
     }
 
     void InteractInput()
