@@ -20,7 +20,7 @@ public class MovableItem : InteractableObject
 
     public override void OnObjectStart()
     {
-        itemToFollow = PlayerWorlds.instance.demonPlayer.transform;
+        
         
         EventManager.UnSubscribe("OnPlayerChange", ChangeMovingMode);
         EventManager.Subscribe("OnPlayerChange", ChangeMovingMode);

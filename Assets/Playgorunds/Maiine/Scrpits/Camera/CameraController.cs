@@ -4,8 +4,9 @@ using UnityEngine;
 
 public class CameraController : MonoBehaviour
 {
-    public Transform lookAtBaseCamera;
-    public Transform lookAtAimCamera;
+    public Transform lookAtCamera;
+    public Transform backAim;
+    public Transform shoulderAim;
 
     public Transform basePositionCam;
     public Transform aimPositionCam;
@@ -37,33 +38,26 @@ public class CameraController : MonoBehaviour
     {
         actualMovemenmt();
         aimPosition();
+        transform.LookAt(lookAtCamera);
 
         if (isAiming)
         {
-            transform.LookAt(lookAtAimCamera);
             if (Input.GetMouseButtonDown(0))
             {
                 RaycastHit hit;
 
                 if (Physics.Raycast(transform.position, transform.forward, out hit, Mathf.Infinity, collisionAimRay))
                 {
-                    pentadent.transform.position = startPointToShoot.position;
                     pentadent.SetObjective(hit.transform);
-                    pentadent.SetGo();
+                    pentadent.SetDir();
                 }
-
             }
-        }
-        else
-        {
-            transform.LookAt(lookAtBaseCamera);
         }
 
         if (Input.GetMouseButtonDown(1))
         {
             aimPosition = AimCam;
             isAiming = true;
-            pentadent.SetBack();
         }
         if (Input.GetMouseButtonUp(1))
         {
@@ -88,6 +82,7 @@ public class CameraController : MonoBehaviour
     public void AimCam()
     {
         transform.position += (aimPositionCam.position - transform.position) * Time.deltaTime * cameraAimSpeed;
+        lookAtCamera.position += (shoulderAim.position - lookAtCamera.position) * Time.deltaTime * cameraAimSpeed;
 
         if (Vector3.Distance(aimPositionCam.position, transform.position) < minDistance)
             aimPosition = delegate { };
@@ -96,6 +91,7 @@ public class CameraController : MonoBehaviour
     public void ThirdPersonCam()
     {
         transform.position += (basePositionCam.position - transform.position) * Time.deltaTime * cameraAimSpeed;
+        lookAtCamera.position += (backAim.position - lookAtCamera.position) * Time.deltaTime * cameraAimSpeed;
 
         if (Vector3.Distance(basePositionCam.position, transform.position) < minDistance)
             aimPosition = delegate { };

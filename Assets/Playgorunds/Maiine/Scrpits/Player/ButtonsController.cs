@@ -58,5 +58,18 @@ public class ButtonsController
             _player.Jump();
     }
 
+    void AimInput()
+    {
 
+    }
+
+    void ShootInput()
+    {
+
+    }
+
+    void InteractInput()
+    {
+
+    }
 }
