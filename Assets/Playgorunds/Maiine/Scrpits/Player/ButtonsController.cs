@@ -41,9 +41,6 @@ public class ButtonsController
         float axieX = Input.GetAxis("Mouse X") + Input.GetAxis("JoyAxis X") * -1;
         float axieY = Input.GetAxis("Mouse Y") + Input.GetAxis("JoyAxis Y") * 0.5f;
 
-        Debug.Log(Input.GetAxis("JoyAxis X"));
-        Debug.Log(Input.GetAxis("JoyAxis Y"));
-
         Mathf.Clamp01(axieX);
         Mathf.Clamp01(axieY);
 

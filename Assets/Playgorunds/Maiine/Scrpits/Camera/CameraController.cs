@@ -4,7 +4,8 @@ using UnityEngine;
 
 public class CameraController : MonoBehaviour
 {
-    public Transform lookAtCamera;
+    public Transform lookAtBaseCamera;
+    public Transform lookAtAimCamera;
 
     public Transform basePositionCam;
     public Transform aimPositionCam;
@@ -13,8 +14,18 @@ public class CameraController : MonoBehaviour
     public float cameraSpeed;
     public float cameraAimSpeed;
 
+    bool isAiming = false;
+
+    public Projectile pentadent;
+    public Projectile arrow;
+
+    public Transform startPointToShoot;
+
     delegate void CameraMovement();
     CameraMovement actualMovemenmt = delegate { };
+    CameraMovement aimPosition = delegate { };
+
+    public LayerMask collisionAimRay;
 
     private void Awake()
     {
@@ -24,27 +35,54 @@ public class CameraController : MonoBehaviour
 
     private void Update()
     {
-        transform.LookAt(lookAtCamera);
         actualMovemenmt();
+        aimPosition();
+
+        if (isAiming)
+        {
+            transform.LookAt(lookAtAimCamera);
+            if (Input.GetMouseButtonDown(0))
+            {
+                RaycastHit hit;
+
+                if (Physics.Raycast(transform.position, transform.forward, out hit, Mathf.Infinity, collisionAimRay))
+                {
+                    pentadent.transform.position = startPointToShoot.position;
+                    pentadent.SetObjective(hit.transform);
+                    pentadent.SetGo();
+                }
+
+            }
+        }
+        else
+        {
+            transform.LookAt(lookAtBaseCamera);
+        }
 
         if (Input.GetMouseButtonDown(1))
         {
-            actualMovemenmt = AimCam;
+            aimPosition = AimCam;
+            isAiming = true;
+            pentadent.SetBack();
         }
         if (Input.GetMouseButtonUp(1))
         {
-            actualMovemenmt = ThirdPersonCam;
+            aimPosition = ThirdPersonCam;
+            isAiming = false;
         }
     }
 
     public void UpdateMovement(int dir)
     {
-        if (dir == 0)
-            actualMovemenmt = GoForward;
-        else if (dir == 1)
-            actualMovemenmt = GoBackward;
-        else if (dir == 2)
-            actualMovemenmt = delegate { };
+        if (!isAiming)
+        {
+            if (dir == 0)
+                actualMovemenmt = GoForward;
+            else if (dir == 1)
+                actualMovemenmt = GoBackward;
+            else if (dir == 2)
+                actualMovemenmt = delegate { };
+        }
     }
 
     public void AimCam()
@@ -52,7 +90,7 @@ public class CameraController : MonoBehaviour
         transform.position += (aimPositionCam.position - transform.position) * Time.deltaTime * cameraAimSpeed;
 
         if (Vector3.Distance(aimPositionCam.position, transform.position) < minDistance)
-            actualMovemenmt = delegate { };
+            aimPosition = delegate { };
     }
 
     public void ThirdPersonCam()
@@ -60,7 +98,7 @@ public class CameraController : MonoBehaviour
         transform.position += (basePositionCam.position - transform.position) * Time.deltaTime * cameraAimSpeed;
 
         if (Vector3.Distance(basePositionCam.position, transform.position) < minDistance)
-            actualMovemenmt = delegate { };
+            aimPosition = delegate { };
     }
 
     public void GoForward()
