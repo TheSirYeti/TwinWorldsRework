@@ -33,9 +33,9 @@ public class CameraController : MonoBehaviour
     {
         actualMovement();
 
-        if (Input.GetMouseButtonDown(0))
+        if (Input.GetMouseButtonDown(1))
             SetAim(true);
-        else if (Input.GetMouseButtonUp(0))
+        else if (Input.GetMouseButtonUp(1))
             SetAim(false);
     }
 
@@ -58,40 +58,18 @@ public class CameraController : MonoBehaviour
         if (Physics.Raycast(Camera.main.ScreenPointToRay(Input.mousePosition), out hit, Mathf.Infinity))
         {
             Vector3 rayPoint = new Vector3(hit.point.x, transform.position.y, hit.point.z);
-            Vector3 rayPointX = new Vector3(hit.point.x, transform.position.y, transform.position.z);
-            Vector3 rayPointZ = new Vector3(transform.position.x, transform.position.y, hit.point.z);
+            Vector3 dist = (rayPoint - playerTrans.position) * 0.5f;
+            midCamera = rayPoint - dist;
 
-            if (Vector3.Distance(rayPointX, playerTrans.position) < maxDistX && 
-                Vector3.Distance(rayPointZ, playerTrans.position) < maxDistZ)
-            {
-                Vector3 dist = rayPoint - playerTrans.position;
-                dist = dist * 0.5f;
+            if (midCamera.x > maxDistX)
+                midCamera.x = maxDistX;
+            else if(midCamera.x < -maxDistX)
+                midCamera.x = -maxDistX;
 
-                Vector3 midPoint = rayPoint - dist;
-
-                midCamera = midPoint;
-                
-            }
-            //else if (Vector3.Distance(rayPointX, playerTrans.position) > maxDistX)
-            //{
-            //    Vector3 rayPointMaxX = new Vector3(maxDistX, transform.position.y, hit.point.z);
-            //    Vector3 dist = rayPointMaxX - playerTrans.position;
-            //    dist = dist * 0.5f;
-
-            //    Vector3 midPoint = rayPoint - dist;
-
-            //    midCamera = midPoint;
-            //}
-            //else if (Vector3.Distance(rayPointZ, playerTrans.position) > maxDistZ)
-            //{
-            //    Vector3 rayPointMaxZ = new Vector3(hit.point.x, transform.position.y, maxDistZ);
-            //    Vector3 dist = rayPointMaxZ - playerTrans.position;
-            //    dist = dist * 0.5f;
-
-            //    Vector3 midPoint = rayPoint - dist;
-
-            //    midCamera = midPoint;
-            //}
+            if (midCamera.z > maxDistZ)
+                midCamera.z = maxDistZ;
+            else if (midCamera.z < -maxDistZ)
+                midCamera.z = -maxDistZ;
 
             transform.position += (midCamera - transform.position) * speed * Time.deltaTime;
         }

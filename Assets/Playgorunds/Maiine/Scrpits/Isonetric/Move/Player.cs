@@ -5,12 +5,7 @@ using UnityEngine;
 public class Player : MonoBehaviour
 {
     public float speed;
-    void Start()
-    {
-        
-    }
 
-    // Update is called once per frame
     void Update()
     {
         transform.position += new Vector3(Input.GetAxis("HorizontalK"), 0, Input.GetAxis("VerticalK")) * speed * Time.deltaTime;
