@@ -13,5 +13,10 @@ public class Player : MonoBehaviour
         {
             EventManager.Trigger("SeeObject", Vector3.zero, 3f);
         }
+
+        if (Input.GetKeyDown(KeyCode.Q))
+        {
+            EventManager.Trigger("ChangeTarget");
+        }
     }
 }
