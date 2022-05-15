@@ -52,9 +52,9 @@ public class ButtonsController
     void MouseButtons()
     {
         if (Input.GetMouseButtonDown(1))
-            _cameraController.AimButton(true);
+            _cameraController.ChangeAimState(true);
         else if (Input.GetMouseButtonUp(1))
-            _cameraController.AimButton(false);
+            _cameraController.ChangeAimState(false);
     }
 
     void InteractableButton()
@@ -67,7 +67,6 @@ public class ButtonsController
     {
         if (Input.GetKeyDown(KeyCode.Q))
         {
-            Debug.Log("aa");
             EventManager.Trigger("ChangePlayer");
         }
     }

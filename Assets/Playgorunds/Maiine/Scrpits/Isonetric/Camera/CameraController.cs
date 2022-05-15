@@ -19,8 +19,12 @@ public class CameraController : MonoBehaviour
     public float maxDistX;
     public float maxDistZ;
 
-    delegate void CameraMove();
-    CameraMove actualMovement;
+    public GameObject blackScreen;
+
+    delegate void CameraDelegate();
+    CameraDelegate actualMovement;
+    CameraDelegate fadeDelegate;
+
     void Start()
     {
         EventManager.Subscribe("SeeObject", SeeObject);
@@ -42,7 +46,7 @@ public class CameraController : MonoBehaviour
     }
 
     //Receptor de Botones
-    public void AimButton(bool isDown)
+    public void ChangeAimState(bool isDown)
     {
         if (isDown)
             SetAim(true);
@@ -50,7 +54,7 @@ public class CameraController : MonoBehaviour
             SetAim(false);
     }
 
-    #region Cambios del Delegate
+    #region Cambios del Delegate de Movimiento
     //Cambia el personaje al que tiene que seguir
     public void ChangePlayer(params object[] parameter)
     {
@@ -85,7 +89,7 @@ public class CameraController : MonoBehaviour
 
     #endregion
 
-    #region Posibles Delegate
+    #region Posibles Delegate Movimiento
     //Sigue al player seleccionado
     void FollowPlayer()
     {
@@ -111,7 +115,7 @@ public class CameraController : MonoBehaviour
             Debug.Log(distanceX + " X");
             Debug.Log(distanceZ + " Z");
 
-            if(distanceX > maxDistX)
+            if (distanceX > maxDistX)
             {
                 if (midCamera.x > actualTransform.position.x)
                 {

@@ -6,9 +6,13 @@ public class Player : MonoBehaviour
 {
     public float speed;
     public bool isActive;
+    public int actualRoom;
 
     public GameObject realCharacter;
     public GameObject totemCharacter;
+
+    CapsuleCollider myCollider;
+    Rigidbody myRigidbody;
 
     IPlayerInteractable _playerInteractable = null;
 
@@ -19,6 +23,9 @@ public class Player : MonoBehaviour
 
     private void Start()
     {
+        myCollider = GetComponent<CapsuleCollider>();
+        myRigidbody = GetComponent<Rigidbody>();
+
         myMovementController = new MovementController(transform, speed);
         myButtonController = new ButtonsController(this, myMovementController, cameraController);
 
@@ -26,17 +33,11 @@ public class Player : MonoBehaviour
 
         if (isActive)
         {
-            realCharacter.SetActive(true);
-            totemCharacter.SetActive(false);
-            myMovementController.ChangeToMove();
-            myButtonController.ButtonsOn();
+            StartCoroutine(CorrutinaTurnOn());
         }
         else
         {
-            realCharacter.SetActive(false);
-            totemCharacter.SetActive(true);
-            myMovementController.ChangeToStay();
-            myButtonController.ButtonsOff();
+            TurnOff();
         }
     }
 
@@ -46,23 +47,6 @@ public class Player : MonoBehaviour
         myMovementController.actualMovement();
     }
 
-    public void ChangeCharacter(params object[] parameter)
-    {
-        Debug.Log("aa?");
-        if (isActive)
-        {
-            myMovementController.ChangeToStay();
-            myButtonController.ButtonsOff();
-            realCharacter.SetActive(false);
-            totemCharacter.SetActive(true);
-        }
-        else
-        {
-            StartCoroutine(TimerTurnOn());
-        }
-
-        isActive = !isActive;
-    }
 
     public void CheckInteractable()
     {
@@ -72,6 +56,70 @@ public class Player : MonoBehaviour
 
         //Mover dentro del objecto
         //EventManager.Trigger("SeeObject", _playerInteractable.GetPos(), _playerInteractable.GetTime());
+    }
+
+    #region Player Change
+    public void ChangeCharacter(params object[] parameter)
+    {
+        if (isActive)
+        {
+            TurnOff();
+        }
+        else
+        {
+            StartCoroutine(CorrutinaTurnOn());
+        }
+
+        isActive = !isActive;
+    }
+
+    void TurnOff()
+    {
+        myMovementController.ChangeToStay();
+        myButtonController.ButtonsOff();
+        realCharacter.SetActive(false);
+        totemCharacter.SetActive(true);
+        myCollider.isTrigger = true;
+        myRigidbody.useGravity = false;
+    }
+
+    IEnumerator CorrutinaTurnOn()
+    {
+        yield return new WaitForEndOfFrame();
+        myMovementController.ChangeToMove();
+        myButtonController.ButtonsOn();
+        realCharacter.SetActive(true);
+        totemCharacter.SetActive(false);
+        myCollider.isTrigger = false;
+        myRigidbody.useGravity = true;
+    }
+    #endregion
+
+    public void SetOffDelegates()
+    {
+        myMovementController.ChangeToStay();
+        myButtonController.ButtonsOff();
+    }
+
+    public void SetOnDelegates()
+    {
+        myMovementController.ChangeToMove();
+        myButtonController.ButtonsOn();
+    }
+
+    public void SetActualRoom(int nextRoom)
+    {
+        actualRoom = nextRoom;
+    }
+
+    public int GetActualRoom()
+    {
+        return actualRoom;
+    }
+
+    public void GoToTransform(Vector3 actualTransform)
+    {
+        transform.position = actualTransform;
     }
 
     private void OnTriggerEnter(Collider other)
@@ -90,12 +138,4 @@ public class Player : MonoBehaviour
             _playerInteractable = null;
     }
 
-    IEnumerator TimerTurnOn()
-    {
-        yield return new WaitForEndOfFrame();
-        myMovementController.ChangeToMove();
-        myButtonController.ButtonsOn();
-        realCharacter.SetActive(true);
-        totemCharacter.SetActive(false);
-    }
 }
