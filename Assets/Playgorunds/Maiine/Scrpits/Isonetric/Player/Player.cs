@@ -53,9 +53,6 @@ public class Player : MonoBehaviour
         if (_playerInteractable == null) return;
 
         _playerInteractable.DoAction();
-
-        //Mover dentro del objecto
-        //EventManager.Trigger("SeeObject", _playerInteractable.GetPos(), _playerInteractable.GetTime());
     }
 
     #region Player Change
