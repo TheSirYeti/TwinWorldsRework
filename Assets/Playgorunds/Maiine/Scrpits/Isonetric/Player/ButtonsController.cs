@@ -16,6 +16,7 @@ public class ButtonsController
         _player = player;
         _movementContoller = movementController;
         _cameraController = cameraController;
+        actualButtons = delegate { };
     }
 
     public void ButtonsOn()

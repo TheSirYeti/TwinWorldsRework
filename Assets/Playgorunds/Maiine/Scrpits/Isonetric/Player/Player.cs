@@ -42,7 +42,7 @@ public class Player : MonoBehaviour
 
     void Update()
     {
-        myButtonController.OnUpdate();
+        myButtonController.actualButtons();
         myMovementController.actualMovement();
     }
 
@@ -58,10 +58,7 @@ public class Player : MonoBehaviour
         }
         else
         {
-            myMovementController.ChangeToMove();
-            myButtonController.ButtonsOn();
-            realCharacter.SetActive(true);
-            totemCharacter.SetActive(false);
+            StartCoroutine(TimerTurnOn());
         }
 
         isActive = !isActive;
@@ -91,5 +88,14 @@ public class Player : MonoBehaviour
         IPlayerInteractable actualPlayerInteractable = other.gameObject.GetComponent<IPlayerInteractable>();
         if (actualPlayerInteractable != null)
             _playerInteractable = null;
+    }
+
+    IEnumerator TimerTurnOn()
+    {
+        yield return new WaitForEndOfFrame();
+        myMovementController.ChangeToMove();
+        myButtonController.ButtonsOn();
+        realCharacter.SetActive(true);
+        totemCharacter.SetActive(false);
     }
 }
